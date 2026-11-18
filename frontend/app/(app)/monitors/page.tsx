@@ -5,6 +5,8 @@ import { Plus, ArrowUpRight } from 'lucide-react';
 import { MonitorList, type MonitorItemWithUptime } from '@/components/monitor-list';
 import { calculateUptimePercent } from '@statuswatch/backend';
 
+export const dynamic = 'force-dynamic';
+
 export default async function MonitorsPage() {
   const supabase = await createClient();
   const {
@@ -89,31 +91,33 @@ export default async function MonitorsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">
             Daftar Monitor
           </h1>
-          <p className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-xs text-muted-foreground mt-0.5">
             Kelola target situs dan API yang dipantau ({rawMonitors.length}/{maxLimit} digunakan).
           </p>
         </div>
 
-        {canAddMore ? (
-          <Link
-            href="/monitors/new"
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm text-white bg-emerald-600 hover:bg-emerald-500 shadow-sm transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Tambah Monitor</span>
-          </Link>
-        ) : (
-          <Link
-            href="/settings"
-            className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl font-medium text-xs text-amber-700 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 hover:bg-amber-100 transition-colors"
-          >
-            <span>Batas Kuota Tercapai ({maxLimit}) — Upgrade ke Pro</span>
-            <ArrowUpRight className="w-4 h-4" />
-          </Link>
-        )}
+        <div>
+          {canAddMore ? (
+            <Link
+              href="/monitors/new"
+              className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-lg text-xs font-medium bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Tambah Monitor</span>
+            </Link>
+          ) : (
+            <Link
+              href="/settings"
+              className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg text-xs font-medium border border-border text-foreground hover:bg-muted transition-colors"
+            >
+              <span>Batas Kuota ({maxLimit}) Tercapai — Kelola Paket</span>
+              <ArrowUpRight className="w-3.5 h-3.5 text-muted-foreground" />
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* Monitor List Component with Search and Filter */}

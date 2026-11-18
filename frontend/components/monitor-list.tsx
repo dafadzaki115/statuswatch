@@ -5,16 +5,10 @@ import Link from 'next/link';
 import {
   Search,
   ExternalLink,
-  CheckCircle,
-  AlertTriangle,
-  HelpCircle,
-  PauseCircle,
-  ShieldCheck,
-  ShieldAlert,
   ArrowRight,
-  Clock,
   Plus,
 } from 'lucide-react';
+import { formatSslStatus } from '@statuswatch/backend/lib/uptime';
 
 export interface MonitorItemWithUptime {
   id: string;
@@ -41,7 +35,6 @@ export function MonitorList({ monitors, canAddMore = true }: MonitorListProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'up' | 'down' | 'paused'>('all');
 
-  // Format waktu relatif (misal: "2 menit lalu")
   const formatRelativeTime = (isoString: string | null) => {
     if (!isoString) return 'Belum dicek';
     const diffSeconds = Math.round((Date.now() - new Date(isoString).getTime()) / 1000);
@@ -56,13 +49,12 @@ export function MonitorList({ monitors, canAddMore = true }: MonitorListProps) {
 
   const filteredMonitors = useMemo(() => {
     return monitors.filter((m) => {
-      // 1. Filter nama
-      const matchesSearch = m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      const matchesSearch =
+        m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         m.url.toLowerCase().includes(searchTerm.toLowerCase());
 
       if (!matchesSearch) return false;
 
-      // 2. Filter status
       if (statusFilter === 'all') return true;
       if (statusFilter === 'paused') return !m.is_active;
       if (statusFilter === 'up') return m.is_active && m.current_status === 'up';
@@ -75,28 +67,27 @@ export function MonitorList({ monitors, canAddMore = true }: MonitorListProps) {
   return (
     <div className="space-y-4">
       {/* Search & Filter Toolbar */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        {/* Search input */}
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Cari berdasarkan nama monitor atau URL..."
-            className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+            placeholder="Cari nama atau URL..."
+            className="w-full h-9 pl-9 pr-3 text-xs sm:text-sm rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
         </div>
 
         {/* Filter buttons */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+        <div className="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0">
           <button
             type="button"
             onClick={() => setStatusFilter('all')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+            className={`h-9 px-3 rounded-lg text-xs font-medium border transition-colors ${
               statusFilter === 'all'
-                ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm'
-                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                ? 'bg-primary text-primary-foreground border-primary'
+                : 'bg-background text-muted-foreground border-border hover:text-foreground hover:bg-muted'
             }`}
           >
             Semua ({monitors.length})
@@ -104,10 +95,10 @@ export function MonitorList({ monitors, canAddMore = true }: MonitorListProps) {
           <button
             type="button"
             onClick={() => setStatusFilter('up')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+            className={`h-9 px-3 rounded-lg text-xs font-medium border transition-colors ${
               statusFilter === 'up'
-                ? 'bg-emerald-600 text-white shadow-sm'
-                : 'text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40'
+                ? 'bg-primary text-primary-foreground border-primary'
+                : 'bg-background text-muted-foreground border-border hover:text-foreground hover:bg-muted'
             }`}
           >
             Up ({monitors.filter((m) => m.is_active && m.current_status === 'up').length})
@@ -115,10 +106,10 @@ export function MonitorList({ monitors, canAddMore = true }: MonitorListProps) {
           <button
             type="button"
             onClick={() => setStatusFilter('down')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+            className={`h-9 px-3 rounded-lg text-xs font-medium border transition-colors ${
               statusFilter === 'down'
-                ? 'bg-red-600 text-white shadow-sm'
-                : 'text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40'
+                ? 'bg-primary text-primary-foreground border-primary'
+                : 'bg-background text-muted-foreground border-border hover:text-foreground hover:bg-muted'
             }`}
           >
             Down ({monitors.filter((m) => m.is_active && m.current_status === 'down').length})
@@ -126,10 +117,10 @@ export function MonitorList({ monitors, canAddMore = true }: MonitorListProps) {
           <button
             type="button"
             onClick={() => setStatusFilter('paused')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+            className={`h-9 px-3 rounded-lg text-xs font-medium border transition-colors ${
               statusFilter === 'paused'
-                ? 'bg-amber-600 text-white shadow-sm'
-                : 'text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40'
+                ? 'bg-primary text-primary-foreground border-primary'
+                : 'bg-background text-muted-foreground border-border hover:text-foreground hover:bg-muted'
             }`}
           >
             Dijeda ({monitors.filter((m) => !m.is_active).length})
@@ -139,152 +130,228 @@ export function MonitorList({ monitors, canAddMore = true }: MonitorListProps) {
 
       {/* List Output */}
       {filteredMonitors.length === 0 ? (
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-10 text-center shadow-sm">
-          <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-            Tidak ada monitor yang cocok dengan kriteria pencarian atau filter.
-          </p>
-          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
-            Coba sesuaikan kata kunci pencarian atau ganti filter status di atas.
+        <div className="bg-background border border-border rounded-lg p-10 text-center space-y-3">
+          <p className="text-sm text-muted-foreground">
+            {monitors.length === 0
+              ? 'Belum ada monitor. Tambahkan URL pertamamu.'
+              : 'Tidak ada monitor yang cocok dengan kriteria pencarian atau filter.'}
           </p>
           {canAddMore && (
-            <div className="mt-4">
+            <div>
               <Link
                 href="/monitors/new"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-500 shadow-sm"
+                className="inline-flex items-center gap-1.5 h-9 px-4 rounded-lg text-xs font-medium bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>Tambah Monitor Baru</span>
+                <span>Tambah Monitor</span>
               </Link>
             </div>
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-3">
-          {filteredMonitors.map((m) => {
-            const isPaused = !m.is_active;
-            const isUp = m.current_status === 'up';
-            const isDown = m.current_status === 'down';
+        <>
+          {/* Desktop Table View */}
+          <div className="hidden md:block border border-border rounded-lg overflow-hidden bg-background">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="border-b border-border bg-muted/50 text-muted-foreground font-medium">
+                  <th className="py-2.5 px-4 font-normal">Nama & Target</th>
+                  <th className="py-2.5 px-3 font-normal">Status</th>
+                  <th className="py-2.5 px-3 font-normal text-right">Latensi</th>
+                  <th className="py-2.5 px-3 font-normal text-right">Uptime 24j</th>
+                  <th className="py-2.5 px-3 font-normal text-right">SSL</th>
+                  <th className="py-2.5 px-3 font-normal text-right">Check Terakhir</th>
+                  <th className="py-2.5 px-4 font-normal text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {filteredMonitors.map((m) => {
+                  const isPaused = !m.is_active;
+                  const isUp = m.current_status === 'up';
+                  const isDown = m.current_status === 'down';
+                  const sslInfo = formatSslStatus(m.sslDaysRemaining);
 
-            return (
-              <div
-                key={m.id}
-                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm hover:border-emerald-500/50 transition-all group"
-              >
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                  {/* Left: Monitor Name & URL */}
-                  <div className="space-y-1.5 flex-1 min-w-0">
-                    <div className="flex items-center gap-2.5 flex-wrap">
-                      <Link
-                        href={`/monitors/${m.id}`}
-                        className="text-base font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors truncate"
-                      >
-                        {m.name}
-                      </Link>
-
-                      {isPaused ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                          <PauseCircle className="w-3 h-3 text-slate-500" />
-                          <span>Dijeda</span>
-                        </span>
-                      ) : isUp ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/40">
-                          <CheckCircle className="w-3 h-3 text-emerald-500" />
-                          <span>Operasional (UP)</span>
-                        </span>
-                      ) : isDown ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-400 border border-red-200/60 dark:border-red-800/40">
-                          <AlertTriangle className="w-3 h-3 text-red-500" />
-                          <span>Gangguan (DOWN)</span>
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
-                          <HelpCircle className="w-3 h-3" />
-                          <span>Belum Dicek</span>
-                        </span>
-                      )}
-                    </div>
-
-                    <a
-                      href={m.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:underline inline-flex items-center gap-1 truncate max-w-full"
+                  return (
+                    <tr
+                      key={m.id}
+                      className="hover:bg-muted/40 transition-colors h-12"
                     >
-                      <span className="truncate">{m.url}</span>
-                      <ExternalLink className="w-3 h-3 shrink-0" />
-                    </a>
-                  </div>
-
-                  {/* Middle: Metrics (Response Time, Uptime 24h, SSL, Last Check) */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 lg:gap-6 py-2 lg:py-0 border-y lg:border-y-0 border-slate-100 dark:border-slate-800 text-xs">
-                    {/* Latensi */}
-                    <div>
-                      <p className="text-slate-400 text-[11px] font-medium">Response Time</p>
-                      <p className="mt-0.5 font-bold text-slate-900 dark:text-white font-mono">
-                        {m.last_response_ms !== null ? `${m.last_response_ms} ms` : '-'}
-                      </p>
-                    </div>
-
-                    {/* Uptime 24 Jam */}
-                    <div>
-                      <p className="text-slate-400 text-[11px] font-medium">Uptime 24j</p>
-                      <p className="mt-0.5 font-bold text-slate-900 dark:text-white font-mono">
-                        {m.uptime24h !== null ? `${m.uptime24h}%` : '100%'}
-                      </p>
-                    </div>
-
-                    {/* SSL Days Remaining */}
-                    <div>
-                      <p className="text-slate-400 text-[11px] font-medium">Sertifikat SSL</p>
-                      <p className="mt-0.5 font-bold text-slate-900 dark:text-white flex items-center gap-1">
-                        {m.sslDaysRemaining !== null ? (
-                          m.sslDaysRemaining > 30 ? (
-                            <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                              <ShieldCheck className="w-3.5 h-3.5" />
-                              <span>{m.sslDaysRemaining} hari</span>
-                            </span>
-                          ) : m.sslDaysRemaining > 7 ? (
-                            <span className="text-amber-600 dark:text-amber-400 flex items-center gap-1">
-                              <ShieldAlert className="w-3.5 h-3.5" />
-                              <span>{m.sslDaysRemaining} hari</span>
-                            </span>
-                          ) : (
-                            <span className="text-red-600 dark:text-red-400 flex items-center gap-1">
-                              <ShieldAlert className="w-3.5 h-3.5" />
-                              <span>{m.sslDaysRemaining <= 0 ? 'Expired' : `${m.sslDaysRemaining} hari`}</span>
-                            </span>
-                          )
+                      <td className="py-2.5 px-4 max-w-xs">
+                        <div className="space-y-0.5 truncate">
+                          <Link
+                            href={`/monitors/${m.id}`}
+                            className="font-medium text-foreground hover:underline truncate block"
+                          >
+                            {m.name}
+                          </Link>
+                          <a
+                            href={m.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-[11px] font-mono truncate max-w-full"
+                          >
+                            <span className="truncate">{m.url}</span>
+                            <ExternalLink className="w-2.5 h-2.5 shrink-0 opacity-60" />
+                          </a>
+                        </div>
+                      </td>
+                      <td className="py-2.5 px-3 whitespace-nowrap">
+                        {isPaused ? (
+                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-muted text-muted-foreground">
+                            <span className="w-2 h-2 rounded-full bg-[hsl(var(--status-unknown))]" />
+                            Dijeda
+                          </span>
+                        ) : isUp ? (
+                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-[hsl(var(--status-up-bg))] text-[hsl(var(--status-up))]">
+                            <span className="w-2 h-2 rounded-full bg-[hsl(var(--status-up))]" />
+                            Up
+                          </span>
+                        ) : isDown ? (
+                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-[hsl(var(--status-down-bg))] text-[hsl(var(--status-down))]">
+                            <span className="w-2 h-2 rounded-full bg-[hsl(var(--status-down))]" />
+                            Down
+                          </span>
                         ) : (
-                          <span className="text-slate-400">-</span>
+                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-muted text-muted-foreground">
+                            <span className="w-2 h-2 rounded-full bg-[hsl(var(--status-unknown))]" />
+                            Unknown
+                          </span>
                         )}
-                      </p>
-                    </div>
+                      </td>
+                      <td className="py-2.5 px-3 text-right font-mono tabular-nums text-foreground">
+                        {m.last_response_ms !== null ? `${m.last_response_ms} ms` : '-'}
+                      </td>
+                      <td className="py-2.5 px-3 text-right font-mono tabular-nums text-foreground">
+                        {m.uptime24h !== null ? `${m.uptime24h}%` : '100%'}
+                      </td>
+                      <td className="py-2.5 px-3 text-right font-mono tabular-nums">
+                        {sslInfo.level === 'safe' && (
+                          <span className="text-[hsl(var(--status-up))]">{sslInfo.label}</span>
+                        )}
+                        {sslInfo.level === 'warning' && (
+                          <span className="text-[hsl(var(--status-warn))]">{sslInfo.label}</span>
+                        )}
+                        {(sslInfo.level === 'danger' || sslInfo.level === 'expired') && (
+                          <span className="text-[hsl(var(--status-down))] font-semibold">
+                            {sslInfo.label}
+                          </span>
+                        )}
+                        {sslInfo.level === 'none' && (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </td>
+                      <td className="py-2.5 px-3 text-right font-mono text-muted-foreground whitespace-nowrap">
+                        {formatRelativeTime(m.last_checked_at)}
+                      </td>
+                      <td className="py-2.5 px-4 text-right">
+                        <Link
+                          href={`/monitors/${m.id}`}
+                          className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-border text-xs text-foreground hover:bg-muted transition-colors"
+                        >
+                          <span>Detail</span>
+                          <ArrowRight className="w-3 h-3" />
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
 
-                    {/* Last Checked */}
-                    <div>
-                      <p className="text-slate-400 text-[11px] font-medium">Check Terakhir</p>
-                      <p className="mt-0.5 font-medium text-slate-600 dark:text-slate-300 flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5 text-slate-400" />
-                        <span>{formatRelativeTime(m.last_checked_at)}</span>
-                      </p>
-                    </div>
-                  </div>
+          {/* Mobile Compact List View */}
+          <div className="md:hidden divide-y divide-border border border-border rounded-lg bg-background overflow-hidden">
+            {filteredMonitors.map((m) => {
+              const isPaused = !m.is_active;
+              const isUp = m.current_status === 'up';
+              const isDown = m.current_status === 'down';
+              const sslInfo = formatSslStatus(m.sslDaysRemaining);
 
-                  {/* Right: Actions */}
-                  <div className="flex items-center gap-2 justify-end">
+              return (
+                <div key={m.id} className="p-3.5 space-y-2">
+                  <div className="flex items-center justify-between gap-2">
                     <Link
                       href={`/monitors/${m.id}`}
-                      className="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-1"
+                      className="font-medium text-sm text-foreground hover:underline truncate"
                     >
-                      <span>Detail</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
+                      {m.name}
+                    </Link>
+                    {isPaused ? (
+                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-muted text-muted-foreground shrink-0">
+                        <span className="w-2 h-2 rounded-full bg-[hsl(var(--status-unknown))]" />
+                        Dijeda
+                      </span>
+                    ) : isUp ? (
+                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-[hsl(var(--status-up-bg))] text-[hsl(var(--status-up))] shrink-0">
+                        <span className="w-2 h-2 rounded-full bg-[hsl(var(--status-up))]" />
+                        Up
+                      </span>
+                    ) : isDown ? (
+                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-[hsl(var(--status-down-bg))] text-[hsl(var(--status-down))] shrink-0">
+                        <span className="w-2 h-2 rounded-full bg-[hsl(var(--status-down))]" />
+                        Down
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-muted text-muted-foreground shrink-0">
+                        <span className="w-2 h-2 rounded-full bg-[hsl(var(--status-unknown))]" />
+                        Unknown
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="text-[11px] font-mono text-muted-foreground truncate">
+                    {m.url}
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 pt-1 border-t border-border text-xs">
+                    <div>
+                      <span className="text-[11px] text-muted-foreground block">Latensi</span>
+                      <span className="font-mono tabular-nums text-foreground">
+                        {m.last_response_ms !== null ? `${m.last_response_ms} ms` : '-'}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-[11px] text-muted-foreground block">Uptime</span>
+                      <span className="font-mono tabular-nums text-foreground">
+                        {m.uptime24h !== null ? `${m.uptime24h}%` : '100%'}
+                      </span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[11px] text-muted-foreground block">SSL</span>
+                      <span className="font-mono tabular-nums">
+                        {sslInfo.level === 'safe' && (
+                          <span className="text-[hsl(var(--status-up))]">{sslInfo.label}</span>
+                        )}
+                        {sslInfo.level === 'warning' && (
+                          <span className="text-[hsl(var(--status-warn))]">{sslInfo.label}</span>
+                        )}
+                        {(sslInfo.level === 'danger' || sslInfo.level === 'expired') && (
+                          <span className="text-[hsl(var(--status-down))] font-semibold">
+                            {sslInfo.label}
+                          </span>
+                        )}
+                        {sslInfo.level === 'none' && (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="pt-1 flex items-center justify-between text-xs text-muted-foreground">
+                    <span className="font-mono">{formatRelativeTime(m.last_checked_at)}</span>
+                    <Link
+                      href={`/monitors/${m.id}`}
+                      className="inline-flex items-center gap-1 text-foreground font-medium hover:underline"
+                    >
+                      <span>Lihat detail</span>
+                      <ArrowRight className="w-3 h-3" />
                     </Link>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        </>
       )}
     </div>
   );

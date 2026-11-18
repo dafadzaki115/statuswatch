@@ -1,9 +1,11 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { ArrowLeft, Server } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { MonitorForm } from './monitor-form';
 import type { PlanType } from '@statuswatch/backend';
+
+export const dynamic = 'force-dynamic';
 
 export default async function NewMonitorPage() {
   const supabase = await createClient();
@@ -23,7 +25,6 @@ export default async function NewMonitorPage() {
 
   const plan = (profile?.plan || 'free') as PlanType;
 
-  // Ambil daftar status pages jika ada
   const { data: statusPages } = await supabase
     .from('status_pages')
     .select('id, title')
@@ -34,27 +35,20 @@ export default async function NewMonitorPage() {
       <div>
         <Link
           href="/monitors"
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors mb-3"
+          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mb-2"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Kembali ke Daftar Monitor</span>
         </Link>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-500/20">
-            <Server className="w-5 h-5 text-emerald-500" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-              Tambah Monitor Baru
-            </h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Konfigurasikan target situs atau API yang ingin Anda pantau.
-            </p>
-          </div>
-        </div>
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">
+          Tambah Monitor Baru
+        </h1>
+        <p className="text-xs text-muted-foreground mt-0.5">
+          Konfigurasikan target situs atau API yang ingin dipantau.
+        </p>
       </div>
 
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm">
+      <div className="bg-background border border-border rounded-lg p-5 sm:p-6">
         <MonitorForm plan={plan} statusPages={statusPages || []} />
       </div>
     </div>

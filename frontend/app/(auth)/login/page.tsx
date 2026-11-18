@@ -10,27 +10,27 @@ export default function LoginPage() {
 
   return (
     <div>
-      <div className="mb-6 text-center">
-        <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-          Masuk ke Akun Anda
+      <div className="mb-5 text-center">
+        <h1 className="text-lg font-semibold tracking-tight text-foreground">
+          Masuk ke Akun
         </h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          Masukkan email dan kata sandi untuk mengakses dashboard monitor.
+        <p className="mt-1 text-xs text-muted-foreground">
+          Masukkan email dan kata sandi untuk mengakses dashboard
         </p>
       </div>
 
       {state?.error && (
-        <div className="mb-5 p-3 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/60 flex items-start gap-2.5 text-sm text-red-700 dark:text-red-300">
-          <AlertCircle className="w-5 h-5 shrink-0 text-red-500 mt-0.5" />
+        <div className="mb-4 p-3 rounded-lg bg-[hsl(var(--status-down-bg))] border border-[hsl(var(--status-down))] flex items-start gap-2 text-xs text-[hsl(var(--status-down))]">
+          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
           <p>{state.error}</p>
         </div>
       )}
 
-      <form action={formAction} className="space-y-4">
+      <form action={formAction} className="space-y-3.5">
         <div>
           <label
             htmlFor="email"
-            className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5"
+            className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1"
           >
             Email
           </label>
@@ -41,15 +41,15 @@ export default function LoginPage() {
             autoComplete="email"
             required
             placeholder="nama@domain.com"
-            className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-colors"
+            className="w-full h-9 px-3 text-xs sm:text-sm rounded-lg border border-border bg-background text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-colors"
           />
         </div>
 
         <div>
-          <div className="flex items-center justify-between mb-1.5">
+          <div className="flex items-center justify-between mb-1">
             <label
               htmlFor="password"
-              className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300"
+              className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground"
             >
               Kata Sandi
             </label>
@@ -61,34 +61,34 @@ export default function LoginPage() {
             autoComplete="current-password"
             required
             placeholder="••••••••"
-            className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-colors"
+            className="w-full h-9 px-3 text-xs sm:text-sm rounded-lg border border-border bg-background text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-colors"
           />
         </div>
 
         <button
           type="submit"
           disabled={isPending}
-          className="w-full mt-2 py-2.5 px-4 rounded-xl font-medium text-sm text-white bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 shadow-sm flex items-center justify-center gap-2 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+          className="w-full mt-2 h-9 px-4 rounded-lg font-medium text-xs sm:text-sm text-primary-foreground bg-primary hover:opacity-90 shadow-xs flex items-center justify-center gap-2 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {isPending ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
               <span>Memverifikasi...</span>
             </>
           ) : (
             <>
-              <LogIn className="w-4 h-4" />
+              <LogIn className="w-3.5 h-3.5" />
               <span>Masuk</span>
             </>
           )}
         </button>
       </form>
 
-      <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 text-center text-xs text-slate-500 dark:text-slate-400">
+      <div className="mt-5 pt-4 border-t border-border text-center text-xs text-muted-foreground">
         Belum memiliki akun?{' '}
         <Link
           href="/register"
-          className="font-semibold text-emerald-600 dark:text-emerald-400 hover:underline"
+          className="font-medium text-foreground underline hover:opacity-80"
         >
           Daftar sekarang
         </Link>

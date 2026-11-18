@@ -20,20 +20,20 @@ export function EditMonitorForm({ monitor, plan, statusPages }: Props) {
 
   return (
     <div className="space-y-6">
-      <form action={formAction} className="space-y-5">
+      <form action={formAction} className="space-y-4">
         {state?.error && (
-          <div className="p-3.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/60 flex items-start gap-2.5 text-sm text-red-700 dark:text-red-300">
-            <AlertCircle className="w-5 h-5 shrink-0 text-red-500 mt-0.5" />
+          <div className="p-3 rounded-lg border border-border bg-muted flex items-start gap-2 text-xs text-[hsl(var(--status-down))]">
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
             <p>{state.error}</p>
           </div>
         )}
 
         {/* Status Aktif */}
-        <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+        <div className="flex items-center justify-between p-3.5 rounded-lg bg-muted border border-border">
           <div>
-            <span className="text-sm font-semibold text-slate-900 dark:text-white">Status Monitor</span>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Jeda atau aktifkan kembali pengecekan otomatis untuk monitor ini.
+            <span className="text-xs font-semibold text-foreground">Status Monitor</span>
+            <p className="text-[11px] text-muted-foreground">
+              Jeda atau aktifkan kembali pengecekan otomatis untuk target ini.
             </p>
           </div>
           <label className="relative inline-flex items-center cursor-pointer">
@@ -44,17 +44,17 @@ export function EditMonitorForm({ monitor, plan, statusPages }: Props) {
               defaultChecked={monitor.is_active}
               className="sr-only peer"
             />
-            <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+            <div className="w-10 h-5 bg-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-border after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
           </label>
         </div>
 
         {/* Nama Monitor */}
-        <div>
+        <div className="space-y-1">
           <label
             htmlFor="name"
-            className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5"
+            className="block text-xs font-medium text-foreground"
           >
-            Nama Monitor <span className="text-red-500">*</span>
+            Nama Monitor <span className="text-[hsl(var(--status-down))]">*</span>
           </label>
           <input
             id="name"
@@ -63,17 +63,17 @@ export function EditMonitorForm({ monitor, plan, statusPages }: Props) {
             required
             maxLength={80}
             defaultValue={monitor.name}
-            className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-colors"
+            className="w-full h-9 px-3 text-xs sm:text-sm rounded-lg border border-border bg-background text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
         </div>
 
         {/* Target URL */}
-        <div>
+        <div className="space-y-1">
           <label
             htmlFor="url"
-            className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5"
+            className="block text-xs font-medium text-foreground"
           >
-            URL Target <span className="text-red-500">*</span>
+            URL Target <span className="text-[hsl(var(--status-down))]">*</span>
           </label>
           <input
             id="url"
@@ -82,20 +82,20 @@ export function EditMonitorForm({ monitor, plan, statusPages }: Props) {
             required
             maxLength={2048}
             defaultValue={monitor.url}
-            className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-colors"
+            className="w-full h-9 px-3 text-xs sm:text-sm rounded-lg border border-border bg-background text-foreground font-mono focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-            Wajib diawali dengan <code className="text-emerald-600">http://</code> atau{' '}
-            <code className="text-emerald-600">https://</code>.
+          <p className="text-[11px] text-muted-foreground">
+            Wajib diawali dengan <code className="font-mono text-foreground">http://</code> atau{' '}
+            <code className="font-mono text-foreground">https://</code>.
           </p>
         </div>
 
         {/* Grid: Method & Expected Status */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
+          <div className="space-y-1">
             <label
               htmlFor="method"
-              className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5"
+              className="block text-xs font-medium text-foreground"
             >
               HTTP Method
             </label>
@@ -103,17 +103,17 @@ export function EditMonitorForm({ monitor, plan, statusPages }: Props) {
               id="method"
               name="method"
               defaultValue={monitor.method}
-              className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-colors"
+              className="w-full h-9 px-3 text-xs sm:text-sm rounded-lg border border-border bg-background text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <option value="GET">GET</option>
               <option value="HEAD">HEAD</option>
             </select>
           </div>
 
-          <div>
+          <div className="space-y-1">
             <label
               htmlFor="expected_status"
-              className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5"
+              className="block text-xs font-medium text-foreground"
             >
               Status Code Diharapkan
             </label>
@@ -124,17 +124,17 @@ export function EditMonitorForm({ monitor, plan, statusPages }: Props) {
               min={100}
               max={599}
               defaultValue={monitor.expected_status}
-              className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-colors"
+              className="w-full h-9 px-3 text-xs sm:text-sm rounded-lg border border-border bg-background text-foreground font-mono focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
           </div>
         </div>
 
         {/* Grid: Interval & Timeout */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
+          <div className="space-y-1">
             <label
               htmlFor="interval_minutes"
-              className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5"
+              className="block text-xs font-medium text-foreground"
             >
               Interval Pemeriksaan
             </label>
@@ -142,7 +142,7 @@ export function EditMonitorForm({ monitor, plan, statusPages }: Props) {
               id="interval_minutes"
               name="interval_minutes"
               defaultValue={String(monitor.interval_minutes)}
-              className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-colors"
+              className="w-full h-9 px-3 text-xs sm:text-sm rounded-lg border border-border bg-background text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               {!isFree && <option value="5">Setiap 5 menit (Pro)</option>}
               <option value="10">Setiap 10 menit</option>
@@ -150,17 +150,17 @@ export function EditMonitorForm({ monitor, plan, statusPages }: Props) {
               <option value="60">Setiap 60 menit</option>
             </select>
             {isFree && (
-              <div className="mt-1 flex items-center gap-1 text-[11px] text-amber-600 dark:text-amber-400">
+              <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
                 <Info className="w-3 h-3 shrink-0" />
                 <span>Paket Free dibatasi minimum 10 menit.</span>
               </div>
             )}
           </div>
 
-          <div>
+          <div className="space-y-1">
             <label
               htmlFor="timeout_ms"
-              className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5"
+              className="block text-xs font-medium text-foreground"
             >
               Batas Waktu Timeout (ms)
             </label>
@@ -172,17 +172,17 @@ export function EditMonitorForm({ monitor, plan, statusPages }: Props) {
               max={8000}
               step={500}
               defaultValue={monitor.timeout_ms}
-              className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-colors"
+              className="w-full h-9 px-3 text-xs sm:text-sm rounded-lg border border-border bg-background text-foreground font-mono focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
           </div>
         </div>
 
         {/* Hubungkan ke Status Page (opsional) */}
         {statusPages.length > 0 && (
-          <div>
+          <div className="space-y-1">
             <label
               htmlFor="status_page_id"
-              className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5"
+              className="block text-xs font-medium text-foreground"
             >
               Tampilkan di Status Page (Opsional)
             </label>
@@ -190,7 +190,7 @@ export function EditMonitorForm({ monitor, plan, statusPages }: Props) {
               id="status_page_id"
               name="status_page_id"
               defaultValue={monitor.status_page_id || ''}
-              className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-colors"
+              className="w-full h-9 px-3 text-xs sm:text-sm rounded-lg border border-border bg-background text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <option value="">Jangan tampilkan di status page mana pun</option>
               {statusPages.map((sp) => (
@@ -203,40 +203,40 @@ export function EditMonitorForm({ monitor, plan, statusPages }: Props) {
         )}
 
         {/* Buttons */}
-        <div className="pt-4 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
+        <div className="pt-3 flex items-center justify-between border-t border-border">
           <button
             type="button"
             onClick={async () => {
-              if (confirm('Apakah Anda yakin ingin menghapus monitor ini? Seluruh riwayat pengecekan juga akan dihapus.')) {
+              if (confirm('Hapus monitor ini secara permanen? Riwayat pengecekan juga akan dihapus.')) {
                 await deleteMonitorAction(monitor.id);
               }
             }}
-            className="px-3.5 py-2 rounded-xl text-xs font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors flex items-center gap-1.5"
+            className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg text-xs font-medium text-[hsl(var(--status-down))] hover:bg-muted border border-border transition-colors"
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 className="w-3.5 h-3.5" />
             <span>Hapus Monitor</span>
           </button>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <Link
               href={`/monitors/${monitor.id}`}
-              className="px-4 py-2.5 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              className="inline-flex items-center justify-center h-9 px-4 rounded-lg text-xs font-medium border border-border text-foreground hover:bg-muted transition-colors"
             >
               Batal
             </Link>
             <button
               type="submit"
               disabled={isPending}
-              className="px-5 py-2.5 rounded-xl font-medium text-sm text-white bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 shadow-sm transition-all flex items-center gap-2 disabled:opacity-60"
+              className="inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-lg text-xs font-medium bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity"
             >
               {isPending ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
                   <span>Menyimpan...</span>
                 </>
               ) : (
                 <>
-                  <Save className="w-4 h-4" />
+                  <Save className="w-3.5 h-3.5" />
                   <span>Simpan Perubahan</span>
                 </>
               )}

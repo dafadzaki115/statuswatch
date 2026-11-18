@@ -26,15 +26,15 @@ export function CopyLinkButton({ slug }: CopyLinkButtonProps) {
     <button
       type="button"
       onClick={handleCopy}
-      className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all flex items-center gap-1.5 ${
+      className={`h-8 px-2.5 rounded-lg text-xs font-medium border transition-colors inline-flex items-center gap-1.5 ${
         copied
-          ? 'bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-700'
-          : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
+          ? 'bg-[hsl(var(--status-up-bg))] text-[hsl(var(--status-up))] border-[hsl(var(--status-up))]'
+          : 'bg-background text-foreground border-border hover:bg-muted'
       }`}
       title="Salin tautan status publik"
     >
-      {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-      <span>{copied ? 'Tersalin!' : 'Salin Link'}</span>
+      {copied ? <Check className="w-3.5 h-3.5 text-[hsl(var(--status-up))]" /> : <Copy className="w-3.5 h-3.5" />}
+      <span>{copied ? 'Tersalin' : 'Salin Link'}</span>
     </button>
   );
 }

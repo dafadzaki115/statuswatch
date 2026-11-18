@@ -36,14 +36,20 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
     const data = payload[0]?.payload;
     if (!data) return null;
     return (
-      <div className="bg-slate-900 text-white p-3 rounded-xl shadow-xl text-xs space-y-1 border border-slate-800">
-        <p className="text-slate-400 font-medium">{data.time}</p>
-        <p className="text-sm font-bold text-emerald-400">
+      <div className="bg-background text-foreground p-3 rounded-lg shadow-md text-xs space-y-1 border border-border">
+        <p className="text-muted-foreground font-mono">{data.time}</p>
+        <p className="text-sm font-bold font-mono tabular-nums text-foreground">
           {data.responseMs} ms
         </p>
-        <p className="text-[11px] text-slate-300">
+        <p className="text-[11px] text-muted-foreground">
           Status:{' '}
-          <span className={data.isUp ? 'text-emerald-400 font-semibold' : 'text-red-400 font-semibold'}>
+          <span
+            className={
+              data.isUp
+                ? 'text-[hsl(var(--status-up))] font-semibold'
+                : 'text-[hsl(var(--status-down))] font-semibold'
+            }
+          >
             {data.isUp ? 'UP' : 'DOWN'}
           </span>
           {data.statusCode ? ` (${data.statusCode})` : ''}
@@ -59,84 +65,80 @@ export function ResponseChart({ checks24h, checks7d }: ResponseChartProps) {
   const activeData = range === '24h' ? checks24h : checks7d;
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
+    <div className="bg-background border border-border rounded-lg p-5 space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h2 className="text-base font-bold text-slate-900 dark:text-white">
-            Grafik Waktu Respons
+          <h2 className="text-sm font-semibold text-foreground">
+            Waktu Respons
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            Pergerakan latensi respons server (ms) selama periode pemantauan.
+          <p className="text-xs text-muted-foreground">
+            Latensi respons server (ms) selama periode pemantauan.
           </p>
         </div>
 
         {/* Tab Pemilih Rentang Waktu */}
-        <div className="inline-flex items-center p-1 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-300 self-start sm:self-auto">
+        <div className="inline-flex items-center p-0.5 bg-muted rounded-md text-xs font-medium self-start sm:self-auto border border-border">
           <button
             type="button"
             onClick={() => setRange('24h')}
-            className={`px-3 py-1.5 rounded-lg transition-all ${
+            className={`px-2.5 py-1 rounded text-xs transition-colors ${
               range === '24h'
-                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm font-semibold'
-                : 'hover:text-slate-900 dark:hover:text-white'
+                ? 'bg-background text-foreground shadow-sm font-semibold'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            24 Jam Terakhir
+            24 Jam
           </button>
           <button
             type="button"
             onClick={() => setRange('7d')}
-            className={`px-3 py-1.5 rounded-lg transition-all ${
+            className={`px-2.5 py-1 rounded text-xs transition-colors ${
               range === '7d'
-                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm font-semibold'
-                : 'hover:text-slate-900 dark:hover:text-white'
+                ? 'bg-background text-foreground shadow-sm font-semibold'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            7 Hari Terakhir
+            7 Hari
           </button>
         </div>
       </div>
 
       {activeData.length === 0 ? (
-        <div className="h-64 flex flex-col items-center justify-center text-center p-6 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+        <div className="h-56 flex flex-col items-center justify-center text-center p-6 border border-border rounded-lg bg-muted/30">
+          <p className="text-xs text-muted-foreground">
             Belum ada data riwayat pengecekan untuk rentang waktu ini.
-          </p>
-          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
-            Data akan muncul secara bertahap setelah pengecekan otomatis atau tombol &quot;Check Now&quot; dijalankan.
           </p>
         </div>
       ) : (
-        <div className="h-64 w-full pt-2">
+        <div className="h-56 w-full pt-2">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={activeData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-              <defs>
-                <linearGradient id="latencyGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="#10b981" stopOpacity={0.0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" opacity={0.5} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" className="text-border opacity-50" />
               <XAxis
                 dataKey="time"
-                tick={{ fontSize: 11, fill: '#94a3b8' }}
+                tick={{ fontSize: 11 }}
                 tickLine={false}
-                axisLine={{ stroke: '#cbd5e1', strokeWidth: 1 }}
+                axisLine={false}
+                stroke="currentColor"
+                className="text-muted-foreground font-mono"
               />
               <YAxis
                 unit="ms"
-                tick={{ fontSize: 11, fill: '#94a3b8' }}
+                tick={{ fontSize: 11 }}
                 tickLine={false}
                 axisLine={false}
+                stroke="currentColor"
+                className="text-muted-foreground font-mono"
               />
               <Tooltip content={<CustomTooltip />} />
               <Area
                 type="monotone"
                 dataKey="responseMs"
-                stroke="#10b981"
-                strokeWidth={2}
-                fillOpacity={1}
-                fill="url(#latencyGradient)"
+                stroke="currentColor"
+                className="text-foreground"
+                strokeWidth={1.5}
+                fill="currentColor"
+                fillOpacity={0.06}
               />
             </AreaChart>
           </ResponsiveContainer>

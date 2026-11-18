@@ -34,21 +34,17 @@ export function PauseResumeButton({ monitorId, isActive }: PauseResumeButtonProp
       type="button"
       onClick={handleToggle}
       disabled={loading}
-      className={`px-4 py-2 rounded-xl text-sm font-medium border transition-colors flex items-center gap-1.5 disabled:opacity-60 ${
-        isActive
-          ? 'text-amber-700 bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800/60 hover:bg-amber-100'
-          : 'text-emerald-700 bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800/60 hover:bg-emerald-100'
-      }`}
+      className="h-9 px-3.5 rounded-lg text-xs font-medium border border-border bg-background text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 disabled:opacity-50"
     >
       {isActive ? (
         <>
-          <Pause className="w-4 h-4 text-amber-600" />
+          <Pause className="w-3.5 h-3.5 text-muted-foreground" />
           <span>{loading ? 'Menjeda...' : 'Jeda Monitor'}</span>
         </>
       ) : (
         <>
-          <Play className="w-4 h-4 text-emerald-600" />
-          <span>{loading ? 'Mengaktifkan...' : 'Lanjutkan Monitor'}</span>
+          <Play className="w-3.5 h-3.5 text-muted-foreground" />
+          <span>{loading ? 'Mengaktifkan...' : 'Lanjutkan'}</span>
         </>
       )}
     </button>

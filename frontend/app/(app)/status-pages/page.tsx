@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { StatusPagesClient } from '@/components/status-pages-client';
 import type { StatusPage, Monitor } from '@statuswatch/backend';
 
+export const dynamic = 'force-dynamic';
+
 export default async function StatusPagesPage() {
   const supabase = await createClient();
   const {

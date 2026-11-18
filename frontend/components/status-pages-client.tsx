@@ -40,10 +40,10 @@ export function StatusPagesClient({
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">
             Kelola Status Page
           </h1>
-          <p className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
             Buat dan bagikan halaman status publik dengan transparansi uptime ({statusPages.length}/{maxLimit} digunakan).
           </p>
         </div>
@@ -52,7 +52,7 @@ export function StatusPagesClient({
           <button
             type="button"
             onClick={handleOpenCreate}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm text-white bg-emerald-600 hover:bg-emerald-500 shadow-sm transition-colors"
+            className="inline-flex items-center justify-center gap-1.5 h-9 px-3.5 rounded-lg font-medium text-xs sm:text-sm text-primary-foreground bg-primary hover:opacity-90 transition-opacity"
           >
             <Plus className="w-4 h-4" />
             <span>Buat Status Page</span>
@@ -60,31 +60,31 @@ export function StatusPagesClient({
         ) : (
           <Link
             href="/settings"
-            className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl font-medium text-xs text-amber-700 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 hover:bg-amber-100 transition-colors"
+            className="inline-flex items-center justify-center gap-1.5 h-9 px-3.5 rounded-lg font-medium text-xs text-[hsl(var(--status-warn))] bg-[hsl(var(--status-warn-bg))] border border-[hsl(var(--status-warn))] hover:opacity-90 transition-opacity"
           >
             <span>Batas Kuota ({maxLimit}) Tercapai — Upgrade ke Pro</span>
-            <ArrowUpRight className="w-4 h-4" />
+            <ArrowUpRight className="w-3.5 h-3.5" />
           </Link>
         )}
       </div>
 
       {/* Status Pages List */}
       {statusPages.length === 0 ? (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-12 text-center shadow-sm">
-          <div className="w-16 h-16 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto mb-4 border border-emerald-500/20">
-            <Globe className="w-8 h-8" />
+        <div className="bg-background rounded-lg border border-border p-12 text-center">
+          <div className="w-12 h-12 rounded-lg bg-muted text-muted-foreground flex items-center justify-center mx-auto mb-3">
+            <Globe className="w-6 h-6" />
           </div>
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+          <h2 className="text-sm font-semibold text-foreground">
             Belum Ada Halaman Status
           </h2>
-          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto">
-            Halaman status publik memungkinkan pelanggan atau pengguna melihat ketersediaan situs web Anda tanpa perlu login.
+          <p className="mt-1.5 text-xs text-muted-foreground max-w-sm mx-auto">
+            Halaman status publik memungkinkan pengunjung melihat ketersediaan situs web tanpa perlu login.
           </p>
-          <div className="mt-6">
+          <div className="mt-5">
             <button
               type="button"
               onClick={handleOpenCreate}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-500 shadow-sm transition-colors"
+              className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-lg text-xs font-medium text-primary-foreground bg-primary hover:opacity-90 transition-opacity"
             >
               <Plus className="w-4 h-4" />
               <span>Buat Halaman Status Pertama</span>
@@ -92,39 +92,39 @@ export function StatusPagesClient({
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-3">
           {statusPages.map((page) => {
             const linkedMonitors = allMonitors.filter((m) => m.status_page_id === page.id);
 
             return (
               <div
                 key={page.id}
-                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:border-emerald-500/50 transition-all space-y-4"
+                className="bg-background border border-border rounded-lg p-5 transition-colors space-y-4"
               >
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                   <div className="space-y-1">
-                    <div className="flex items-center gap-2.5 flex-wrap">
-                      <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="text-base font-semibold text-foreground">
                         {page.title}
                       </h3>
                       {page.is_public ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-200/60">
-                          <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-[hsl(var(--status-up-bg))] text-[hsl(var(--status-up))]">
+                          <CheckCircle2 className="w-3 h-3" />
                           <span>Publik</span>
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                          <EyeOff className="w-3.5 h-3.5" />
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-muted text-muted-foreground">
+                          <EyeOff className="w-3 h-3" />
                           <span>Privat</span>
                         </span>
                       )}
                     </div>
                     {page.description && (
-                      <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xl">
+                      <p className="text-xs text-muted-foreground max-w-xl">
                         {page.description}
                       </p>
                     )}
-                    <p className="text-xs font-mono text-emerald-600 dark:text-emerald-400">
+                    <p className="text-xs font-mono text-muted-foreground">
                       /status/{page.slug}
                     </p>
                   </div>
@@ -136,7 +136,7 @@ export function StatusPagesClient({
                       href={`/status/${page.slug}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-1"
+                      className="h-8 px-2.5 rounded-lg text-xs font-medium text-foreground border border-border bg-background hover:bg-muted transition-colors inline-flex items-center gap-1"
                     >
                       <span>Buka</span>
                       <ExternalLink className="w-3.5 h-3.5" />
@@ -144,7 +144,7 @@ export function StatusPagesClient({
                     <button
                       type="button"
                       onClick={() => handleOpenEdit(page)}
-                      className="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-1"
+                      className="h-8 px-2.5 rounded-lg text-xs font-medium text-foreground border border-border bg-background hover:bg-muted transition-colors inline-flex items-center gap-1"
                     >
                       <Edit className="w-3.5 h-3.5" />
                       <span>Ubah</span>
@@ -154,21 +154,21 @@ export function StatusPagesClient({
                 </div>
 
                 {/* Linked Monitors Summary */}
-                <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
+                <div className="pt-3 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
                   <span>
-                    Monitor tertaut: <strong className="text-slate-800 dark:text-slate-200">{linkedMonitors.length}</strong> monitor
+                    Monitor tertaut: <strong className="text-foreground">{linkedMonitors.length}</strong> monitor
                   </span>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5 flex-wrap">
                     {linkedMonitors.slice(0, 3).map((m) => (
                       <span
                         key={m.id}
-                        className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[11px] font-medium text-slate-700 dark:text-slate-300 truncate max-w-[120px]"
+                        className="px-2 py-0.5 rounded border border-border bg-muted text-[11px] font-mono text-foreground truncate max-w-[140px]"
                       >
                         {m.name}
                       </span>
                     ))}
                     {linkedMonitors.length > 3 && (
-                      <span className="text-[11px] text-slate-400">
+                      <span className="text-[11px] text-muted-foreground">
                         +{linkedMonitors.length - 3} lainnya
                       </span>
                     )}

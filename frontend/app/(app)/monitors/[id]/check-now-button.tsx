@@ -22,19 +22,19 @@ export function CheckNowButton({ monitorId }: { monitorId: string }) {
       if (!res.ok) {
         setFeedback({
           type: 'error',
-          message: data.error?.message || 'Pengecekan gagal',
+          message: data.error?.message || 'Gagal memeriksa monitor. Coba lagi.',
         });
       } else {
         setFeedback({
           type: 'success',
-          message: `Selesai! Status: ${data.data?.isUp ? 'UP' : 'DOWN'} (${data.data?.responseMs}ms)`,
+          message: `Selesai: ${data.data?.isUp ? 'UP' : 'DOWN'} (${data.data?.responseMs} ms)`,
         });
         router.refresh();
       }
     } catch {
       setFeedback({
         type: 'error',
-        message: 'Koneksi ke endpoint check gagal',
+        message: 'Gagal terhubung ke server. Periksa koneksi.',
       });
     } finally {
       setLoading(false);
@@ -48,26 +48,26 @@ export function CheckNowButton({ monitorId }: { monitorId: string }) {
         type="button"
         onClick={handleCheckNow}
         disabled={loading}
-        className="px-4 py-2 rounded-xl text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 shadow-sm transition-all flex items-center gap-1.5 disabled:opacity-60"
+        className="h-9 px-3.5 rounded-lg text-xs font-medium border border-border bg-background text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 disabled:opacity-50"
       >
-        <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-        <span>{loading ? 'Mengecek...' : 'Check Now'}</span>
+        <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+        <span>{loading ? 'Mengecek...' : 'Cek Sekarang'}</span>
       </button>
 
       {feedback && (
         <div
-          className={`absolute right-0 top-full mt-2 w-64 p-2.5 rounded-xl shadow-lg border text-xs z-20 flex items-center gap-2 ${
+          className={`absolute right-0 top-full mt-2 w-72 p-2.5 rounded-lg shadow-md border text-xs z-30 flex items-center gap-2 ${
             feedback.type === 'success'
-              ? 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800'
-              : 'bg-red-50 text-red-800 border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-800'
+              ? 'bg-background text-foreground border-border'
+              : 'bg-background text-[hsl(var(--status-down))] border-border'
           }`}
         >
           {feedback.type === 'success' ? (
-            <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+            <Check className="w-4 h-4 text-[hsl(var(--status-up))] shrink-0" />
           ) : (
-            <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+            <AlertCircle className="w-4 h-4 text-[hsl(var(--status-down))] shrink-0" />
           )}
-          <span className="truncate">{feedback.message}</span>
+          <span className="truncate font-mono">{feedback.message}</span>
         </div>
       )}
     </div>

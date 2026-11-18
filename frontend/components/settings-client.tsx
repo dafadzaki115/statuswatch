@@ -71,13 +71,13 @@ export function SettingsClient({
   };
 
   return (
-    <div className="space-y-8 max-w-4xl">
+    <div className="space-y-6 max-w-4xl">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">
           Pengaturan Akun & Paket Langganan
         </h1>
-        <p className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
           Kelola profil pengguna, status langganan simulasi SaaS, dan kuota pemantauan Anda.
         </p>
       </div>
@@ -85,47 +85,47 @@ export function SettingsClient({
       {/* Feedback Alert */}
       {feedback && (
         <div
-          className={`p-4 rounded-2xl border text-xs sm:text-sm flex items-start gap-3 animate-in fade-in ${
+          className={`p-3.5 rounded-lg border text-xs sm:text-sm flex items-start gap-2.5 animate-in fade-in ${
             feedback.type === 'success'
-              ? 'bg-emerald-50 text-emerald-900 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-200 dark:border-emerald-800'
-              : 'bg-red-50 text-red-900 border-red-200 dark:bg-red-950/60 dark:text-red-200 dark:border-red-800'
+              ? 'bg-[hsl(var(--status-up-bg))] text-[hsl(var(--status-up))] border-[hsl(var(--status-up))]'
+              : 'bg-[hsl(var(--status-down-bg))] text-[hsl(var(--status-down))] border-[hsl(var(--status-down))]'
           }`}
         >
           {feedback.type === 'success' ? (
-            <Check className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+            <Check className="w-4 h-4 shrink-0 mt-0.5 text-[hsl(var(--status-up))]" />
           ) : (
-            <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-[hsl(var(--status-down))]" />
           )}
           <p className="flex-1 leading-relaxed">{feedback.message}</p>
         </div>
       )}
 
-      {/* Profil Card */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
-        <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-          <User className="w-5 h-5 text-emerald-600" />
+      {/* Profile Card */}
+      <div className="bg-background border border-border rounded-lg p-5 space-y-4">
+        <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
+          <User className="w-4 h-4 text-muted-foreground" />
           <span>Informasi Akun</span>
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-          <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+          <div className="p-3.5 rounded-lg bg-muted border border-border">
+            <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
               Alamat Email
             </p>
-            <p className="mt-1 text-sm font-bold text-slate-900 dark:text-white truncate">
+            <p className="mt-1 text-sm font-semibold text-foreground truncate font-mono">
               {userEmail}
             </p>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+          <div className="p-3.5 rounded-lg bg-muted border border-border">
+            <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
               Paket Aktif Saat Ini
             </p>
             <div className="mt-1 flex items-center gap-2">
-              <span className="text-sm font-extrabold uppercase text-emerald-600 dark:text-emerald-400 font-mono">
+              <span className="text-sm font-bold uppercase text-foreground font-mono">
                 {currentPlan}
               </span>
-              <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+              <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-[hsl(var(--status-up-bg))] text-[hsl(var(--status-up))]">
                 Aktif
               </span>
             </div>
@@ -133,84 +133,84 @@ export function SettingsClient({
         </div>
 
         {/* Current Usage Stats */}
-        <div className="pt-2 text-xs text-slate-500 dark:text-slate-400 flex items-center gap-6">
+        <div className="pt-2 text-xs text-muted-foreground flex items-center gap-6 border-t border-border">
           <span>
-            Monitor Aktif: <strong className="text-slate-900 dark:text-white">{monitorCount}</strong>/{currentPlan === 'pro' ? 20 : 3}
+            Monitor Aktif: <strong className="font-mono text-foreground">{monitorCount}</strong>/{currentPlan === 'pro' ? 20 : 3}
           </span>
           <span>
-            Status Page: <strong className="text-slate-900 dark:text-white">{statusPageCount}</strong>/{currentPlan === 'pro' ? 5 : 1}
+            Status Page: <strong className="font-mono text-foreground">{statusPageCount}</strong>/{currentPlan === 'pro' ? 5 : 1}
           </span>
         </div>
       </div>
 
       {/* Plan Selection Cards (Free vs Pro) */}
-      <div className="space-y-4">
-        <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-          <Zap className="w-5 h-5 text-amber-500" />
+      <div className="space-y-3">
+        <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
+          <Zap className="w-4 h-4 text-muted-foreground" />
           <span>Pilihan Paket Langganan (Simulasi SaaS)</span>
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Paket FREE */}
           <div
-            className={`bg-white dark:bg-slate-900 rounded-2xl p-6 border transition-all space-y-5 flex flex-col justify-between ${
+            className={`bg-background rounded-lg p-5 border transition-all space-y-4 flex flex-col justify-between ${
               currentPlan === 'free'
-                ? 'border-emerald-500 shadow-md ring-2 ring-emerald-500/20'
-                : 'border-slate-200 dark:border-slate-800 shadow-sm opacity-90'
+                ? 'border-foreground shadow-xs ring-1 ring-foreground/20'
+                : 'border-border'
             }`}
           >
-            <div className="space-y-4">
+            <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                  <h3 className="text-base font-semibold text-foreground">
                     Paket Free
                   </h3>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-muted-foreground">
                     Untuk kebutuhan pemantauan dasar & proyek kecil.
                   </p>
                 </div>
                 {currentPlan === 'free' && (
-                  <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                    Paket Saat Ini
+                  <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-muted text-foreground border border-border">
+                    Aktif
                   </span>
                 )}
               </div>
 
-              <div className="text-2xl font-extrabold text-slate-900 dark:text-white">
-                Rp 0 <span className="text-xs font-normal text-slate-400">/ selamanya</span>
+              <div className="text-xl font-bold font-mono text-foreground">
+                Rp 0 <span className="text-xs font-normal text-muted-foreground">/ selamanya</span>
               </div>
 
               {/* Fitur Free */}
-              <ul className="space-y-2.5 text-xs text-slate-600 dark:text-slate-300">
+              <ul className="space-y-2 text-xs text-muted-foreground">
                 <li className="flex items-center gap-2">
-                  <Server className="w-4 h-4 text-emerald-500 shrink-0" />
-                  <span>Maksimal <strong>3 monitor</strong></span>
+                  <Server className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                  <span>Maksimal <strong className="text-foreground">3 monitor</strong></span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-emerald-500 shrink-0" />
-                  <span>Interval cek minimum <strong>10 menit</strong></span>
+                  <Clock className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                  <span>Interval cek minimum <strong className="text-foreground">10 menit</strong></span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <Radio className="w-4 h-4 text-emerald-500 shrink-0" />
-                  <span><strong>1 status page</strong> publik</span>
+                  <Radio className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                  <span><strong className="text-foreground">1 status page</strong> publik</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-emerald-500 shrink-0" />
-                  <span>Retensi data riwayat <strong>7 hari</strong></span>
+                  <Calendar className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                  <span>Retensi data riwayat <strong className="text-foreground">7 hari</strong></span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
+                  <ShieldCheck className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                   <span>Pemantauan SSL/TLS otomatis</span>
                 </li>
               </ul>
             </div>
 
-            <div>
+            <div className="pt-2">
               {currentPlan === 'free' ? (
                 <button
                   type="button"
                   disabled
-                  className="w-full py-2.5 rounded-xl text-xs font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 cursor-not-allowed text-center"
+                  className="w-full h-8 rounded-lg text-xs font-medium text-muted-foreground bg-muted cursor-not-allowed text-center"
                 >
                   Paket Anda Sekarang
                 </button>
@@ -219,9 +219,9 @@ export function SettingsClient({
                   type="button"
                   disabled={loading}
                   onClick={() => handlePlanChange('free')}
-                  className="w-full py-2.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-60"
+                  className="w-full h-8 rounded-lg text-xs font-medium text-foreground border border-border hover:bg-muted transition-colors flex items-center justify-center gap-1.5 disabled:opacity-60"
                 >
-                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                  {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
                   <span>Turun ke Free</span>
                 </button>
               )}
@@ -230,72 +230,70 @@ export function SettingsClient({
 
           {/* Paket PRO */}
           <div
-            className={`bg-white dark:bg-slate-900 rounded-2xl p-6 border transition-all space-y-5 flex flex-col justify-between relative overflow-hidden ${
+            className={`bg-background rounded-lg p-5 border transition-all space-y-4 flex flex-col justify-between relative ${
               currentPlan === 'pro'
-                ? 'border-emerald-500 shadow-md ring-2 ring-emerald-500/20'
-                : 'border-emerald-300 dark:border-emerald-800/80 shadow-md'
+                ? 'border-foreground shadow-xs ring-1 ring-foreground/20'
+                : 'border-border'
             }`}
           >
-            {/* Banner Rekomendasi */}
             {currentPlan !== 'pro' && (
-              <div className="absolute top-0 right-0 bg-emerald-600 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">
+              <div className="absolute top-2 right-2 bg-primary text-primary-foreground text-[10px] font-medium px-2 py-0.5 rounded uppercase tracking-wider">
                 Rekomendasi
               </div>
             )}
 
-            <div className="space-y-4">
+            <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <h3 className="text-base font-semibold text-foreground flex items-center gap-1.5">
                     <span>Paket Pro</span>
-                    <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
                   </h3>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-muted-foreground">
                     Untuk developer profesional, instansi, dan UMKM berkembang.
                   </p>
                 </div>
                 {currentPlan === 'pro' && (
-                  <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                    Paket Saat Ini
+                  <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-muted text-foreground border border-border">
+                    Aktif
                   </span>
                 )}
               </div>
 
-              <div className="text-2xl font-extrabold text-slate-900 dark:text-white">
-                Rp 49.000 <span className="text-xs font-normal text-slate-400">/ bulan (Simulasi)</span>
+              <div className="text-xl font-bold font-mono text-foreground">
+                Rp 49.000 <span className="text-xs font-normal text-muted-foreground">/ bulan (Simulasi)</span>
               </div>
 
               {/* Fitur Pro */}
-              <ul className="space-y-2.5 text-xs text-slate-600 dark:text-slate-300">
+              <ul className="space-y-2 text-xs text-muted-foreground">
                 <li className="flex items-center gap-2">
-                  <Server className="w-4 h-4 text-emerald-500 shrink-0" />
-                  <span>Maksimal <strong>20 monitor</strong></span>
+                  <Server className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                  <span>Maksimal <strong className="text-foreground">20 monitor</strong></span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-emerald-500 shrink-0" />
-                  <span>Interval cek lebih cepat: <strong>5 menit</strong></span>
+                  <Clock className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                  <span>Interval cek lebih cepat: <strong className="text-foreground">5 menit</strong></span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <Radio className="w-4 h-4 text-emerald-500 shrink-0" />
-                  <span>Hingga <strong>5 status page</strong> publik</span>
+                  <Radio className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                  <span>Hingga <strong className="text-foreground">5 status page</strong> publik</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-emerald-500 shrink-0" />
-                  <span>Retensi data riwayat diperpanjang ke <strong>30 hari</strong></span>
+                  <Calendar className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                  <span>Retensi data riwayat diperpanjang ke <strong className="text-foreground">30 hari</strong></span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
+                  <ShieldCheck className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                   <span>Prioritas pemeriksaan cron cloud</span>
                 </li>
               </ul>
             </div>
 
-            <div>
+            <div className="pt-2">
               {currentPlan === 'pro' ? (
                 <button
                   type="button"
                   disabled
-                  className="w-full py-2.5 rounded-xl text-xs font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 cursor-not-allowed text-center"
+                  className="w-full h-8 rounded-lg text-xs font-medium text-muted-foreground bg-muted cursor-not-allowed text-center"
                 >
                   Paket Anda Sekarang
                 </button>
@@ -304,9 +302,9 @@ export function SettingsClient({
                   type="button"
                   disabled={loading}
                   onClick={() => handlePlanChange('pro')}
-                  className="w-full py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 shadow-md transition-all flex items-center justify-center gap-1.5 disabled:opacity-60"
+                  className="w-full h-8 rounded-lg text-xs font-medium text-primary-foreground bg-primary hover:opacity-90 shadow-xs transition-opacity flex items-center justify-center gap-1.5 disabled:opacity-60"
                 >
-                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
+                  {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
                   <span>Upgrade ke Pro (Gratis Demo)</span>
                 </button>
               )}
@@ -316,12 +314,12 @@ export function SettingsClient({
       </div>
 
       {/* Logout Card */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="bg-background border border-border rounded-lg p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+          <h3 className="text-sm font-semibold text-foreground">
             Keluar dari Akun (Logout)
           </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-muted-foreground mt-0.5">
             Akhiri sesi login Anda di perangkat ini secara aman.
           </p>
         </div>
@@ -329,9 +327,9 @@ export function SettingsClient({
         <form action={logoutAction}>
           <button
             type="submit"
-            className="px-4 py-2 rounded-xl text-xs font-semibold text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/60 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors flex items-center gap-1.5"
+            className="h-8 px-3 rounded-lg text-xs font-medium text-[hsl(var(--status-down))] border border-border bg-background hover:bg-[hsl(var(--status-down-bg))] transition-colors inline-flex items-center gap-1.5"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-3.5 h-3.5" />
             <span>Keluar dari Akun</span>
           </button>
         </form>

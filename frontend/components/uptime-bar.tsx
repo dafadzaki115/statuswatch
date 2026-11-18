@@ -11,27 +11,35 @@ interface UptimeBarProps {
 export function UptimeBar({ segments, uptimePercent }: UptimeBarProps) {
   const [hoveredSegment, setHoveredSegment] = useState<DailyUptimeSegment | null>(null);
 
+  // Jika segments kurang dari 90, gunakan apa adanya, jika 90, izinkan responsif di mobile
+  const total = segments.length;
+
   return (
     <div className="space-y-2">
       {/* 90 Days Bar Visual */}
       <div className="relative">
         <div className="flex items-center gap-[2px] h-8 w-full overflow-hidden">
           {segments.map((seg, idx) => {
-            let bgClass = 'bg-slate-200 dark:bg-slate-800'; // gray (no data)
+            let bgClass = 'bg-muted opacity-60'; // gray (no data)
             if (seg.status === 'green') {
-              bgClass = 'bg-emerald-500 hover:bg-emerald-400';
+              bgClass = 'bg-[hsl(var(--status-up))] hover:opacity-90';
             } else if (seg.status === 'yellow') {
-              bgClass = 'bg-amber-400 hover:bg-amber-300';
+              bgClass = 'bg-[hsl(var(--status-warn))] hover:opacity-90';
             } else if (seg.status === 'red') {
-              bgClass = 'bg-red-500 hover:bg-red-400';
+              bgClass = 'bg-[hsl(var(--status-down))] hover:opacity-90';
             }
+
+            // Di layar mobile (< 640px), sembunyikan 45 hari pertama jika ada 90 segmen
+            const isHiddenOnMobile = total === 90 && idx < 45;
 
             return (
               <div
                 key={idx}
                 onMouseEnter={() => setHoveredSegment(seg)}
                 onMouseLeave={() => setHoveredSegment(null)}
-                className={`flex-1 h-7 rounded-sm transition-all cursor-pointer ${bgClass}`}
+                className={`flex-1 h-7 rounded-[2px] transition-opacity cursor-pointer ${bgClass} ${
+                  isHiddenOnMobile ? 'hidden sm:block' : 'block'
+                }`}
               />
             );
           })}
@@ -39,27 +47,28 @@ export function UptimeBar({ segments, uptimePercent }: UptimeBarProps) {
 
         {/* Hover Tooltip */}
         {hoveredSegment && (
-          <div className="absolute left-1/2 -top-12 -translate-x-1/2 bg-slate-900 text-white text-xs px-3 py-1.5 rounded-xl shadow-lg border border-slate-800 whitespace-nowrap z-30 pointer-events-none animate-in fade-in zoom-in-95">
-            <span className="font-semibold">{hoveredSegment.date}:</span>{' '}
+          <div className="absolute left-1/2 -top-11 -translate-x-1/2 bg-background text-foreground text-xs px-2.5 py-1 rounded-lg shadow-md border border-border whitespace-nowrap z-30 pointer-events-none transition-opacity">
+            <span className="font-mono text-muted-foreground">{hoveredSegment.date}:</span>{' '}
             {hoveredSegment.uptimePercent !== null ? (
-              <span className="font-bold text-emerald-400">
+              <span className="font-mono font-semibold tabular-nums text-foreground">
                 {hoveredSegment.uptimePercent}% ({hoveredSegment.upChecks}/{hoveredSegment.totalChecks} check)
               </span>
             ) : (
-              <span className="text-slate-400">Tidak ada data</span>
+              <span className="text-muted-foreground font-mono">Tanpa data</span>
             )}
           </div>
         )}
       </div>
 
       {/* Legend & Stats */}
-      <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-medium">
-        <span>90 hari lalu</span>
-        <div className="flex items-center gap-2">
-          <span className="font-bold text-slate-900 dark:text-white font-mono">
+      <div className="flex items-center justify-between text-xs text-muted-foreground">
+        <span className="hidden sm:inline">90 hari lalu</span>
+        <span className="sm:hidden">45 hari lalu</span>
+        <div className="flex items-center gap-1.5">
+          <span className="font-mono font-semibold tabular-nums text-foreground text-xs">
             {uptimePercent !== null ? `${uptimePercent}%` : '100%'}
           </span>
-          <span>uptime</span>
+          <span className="text-muted-foreground">ketersediaan</span>
         </div>
         <span>Hari ini</span>
       </div>

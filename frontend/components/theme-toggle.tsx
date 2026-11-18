@@ -34,7 +34,7 @@ export function ThemeToggle() {
   };
 
   if (!mounted) {
-    return <div className="w-8 h-8" />;
+    return <div className="w-9 h-9 border border-transparent rounded-lg" />;
   }
 
   return (
@@ -42,10 +42,10 @@ export function ThemeToggle() {
       type="button"
       onClick={toggleTheme}
       aria-label="Toggle Dark Mode"
-      className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors"
+      className="h-9 w-9 rounded-lg flex items-center justify-center text-foreground hover:bg-muted border border-border bg-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       title={isDark ? 'Ganti ke Mode Terang' : 'Ganti ke Mode Gelap'}
     >
-      {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}
+      {isDark ? <Sun className="w-4 h-4 text-foreground" /> : <Moon className="w-4 h-4 text-foreground" />}
     </button>
   );
 }
