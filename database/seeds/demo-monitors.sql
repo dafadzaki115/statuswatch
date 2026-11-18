@@ -1,0 +1,13 @@
+-- ============================================
+-- Seed Data: Contoh monitor untuk demo
+-- ============================================
+-- Jalankan setelah membuat akun dan mendapatkan user_id.
+-- Ganti '<USER_ID>' dengan UUID akun demo Anda.
+
+-- INSERT INTO public.monitors (owner_id, name, url, method, interval_minutes, expected_status, timeout_ms)
+-- VALUES
+--   ('<USER_ID>', 'Google', 'https://www.google.com', 'GET', 5, 200, 5000),
+--   ('<USER_ID>', 'GitHub', 'https://github.com', 'GET', 5, 200, 5000),
+--   ('<USER_ID>', 'Situs Kampus', 'https://ugm.ac.id', 'GET', 5, 200, 5000),
+--   ('<USER_ID>', 'Simulasi Down', 'https://httpstat.us/503', 'GET', 5, 200, 5000),
+--   ('<USER_ID>', 'Expired SSL', 'https://expired.badssl.com', 'GET', 5, 200, 5000);

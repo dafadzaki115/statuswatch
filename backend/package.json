@@ -1,0 +1,53 @@
+{
+  "name": "@statuswatch/backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./services/*": {
+      "types": "./dist/services/*.d.ts",
+      "import": "./dist/services/*.js"
+    },
+    "./repositories/*": {
+      "types": "./dist/repositories/*.d.ts",
+      "import": "./dist/repositories/*.js"
+    },
+    "./validators/*": {
+      "types": "./dist/validators/*.d.ts",
+      "import": "./dist/validators/*.js"
+    },
+    "./security/*": {
+      "types": "./dist/security/*.d.ts",
+      "import": "./dist/security/*.js"
+    },
+    "./checker/*": {
+      "types": "./dist/checker/*.d.ts",
+      "import": "./dist/checker/*.js"
+    },
+    "./lib/*": {
+      "types": "./dist/lib/*.d.ts",
+      "import": "./dist/lib/*.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "@supabase/supabase-js": "^2.47.14"
+  },
+  "peerDependencies": {
+    "@supabase/supabase-js": "^2.47.14"
+  }
+}
