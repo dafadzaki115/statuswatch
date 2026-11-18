@@ -33,19 +33,29 @@
     "./lib/*": {
       "types": "./dist/lib/*.d.ts",
       "import": "./dist/lib/*.js"
+    },
+    "./infrastructure/*": {
+      "types": "./dist/infrastructure/*.d.ts",
+      "import": "./dist/infrastructure/*.js"
+    },
+    "./notifications/*": {
+      "types": "./dist/notifications/*.d.ts",
+      "import": "./dist/notifications/*.js"
     }
   },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "node --test test/**/*.test.mjs"
   },
   "dependencies": {
-    "zod": "^3.23.8"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
-    "typescript": "^5.6.3",
-    "@supabase/supabase-js": "^2.47.14"
+    "@supabase/supabase-js": "^2.119.0",
+    "@types/node": "^20.19.43",
+    "typescript": "^5.6.3"
   },
   "peerDependencies": {
     "@supabase/supabase-js": "^2.47.14"

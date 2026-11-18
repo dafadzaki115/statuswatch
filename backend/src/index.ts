@@ -2,6 +2,7 @@
 // Barrel export — semua modul publik diekspor dari sini.
 
 // Validators
+export * from './validators/auth.validator.js';
 export * from './validators/monitor.validator.js';
 export * from './validators/status-page.validator.js';
 export * from './validators/plan.validator.js';
@@ -34,3 +35,10 @@ export * from './lib/plans.js';
 export * from './lib/uptime.js';
 export * from './lib/errors.js';
 export * from './lib/types.js';
+
+// Notifications (P2)
+export * from './notifications/email.service.js';
+
+// Infrastructure
+export * from './infrastructure/supabase/admin.js';
+

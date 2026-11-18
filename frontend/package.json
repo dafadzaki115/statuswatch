@@ -10,18 +10,27 @@
   },
   "dependencies": {
     "@statuswatch/backend": "*",
-    "next": "16.4.6",
-    "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.119.0",
+    "es-abstract": "^1.24.2",
+    "lucide-react": "^1.75.0",
+    "next": "^15.5.29",
+    "react": "^19",
+    "react-dom": "^19",
+    "recharts": "^3.11.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@tailwindcss/turbopack": "4.3.3",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.4.6",
-    "tailwindcss": "4.3.3",
+    "eslint-config-next": "^15.5.29",
+    "json5": "^2.2.3",
+    "postcss": "^8",
+    "tailwindcss": "^4",
     "typescript": "^5"
   }
 }

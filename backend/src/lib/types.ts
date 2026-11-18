@@ -44,6 +44,69 @@ export const ErrorCode = {
 
 export type ErrorCodeType = (typeof ErrorCode)[keyof typeof ErrorCode];
 
+/** Model database: Profile */
+export interface Profile {
+  id: string;
+  email: string;
+  plan: PlanType;
+  created_at: string;
+}
+
+/** Model database: Monitor */
+export interface Monitor {
+  id: string;
+  owner_id: string;
+  status_page_id: string | null;
+  name: string;
+  url: string;
+  method: HttpMethod;
+  interval_minutes: number;
+  expected_status: number;
+  timeout_ms: number;
+  is_active: boolean;
+  current_status: MonitorStatus;
+  consecutive_failures: number;
+  last_checked_at: string | null;
+  last_status_code: number | null;
+  last_response_ms: number | null;
+  ssl_expires_at: string | null;
+  created_at: string;
+}
+
+/** Model database: Check */
+export interface Check {
+  id: number;
+  monitor_id: string;
+  checked_at: string;
+  status_code: number | null;
+  response_ms: number;
+  is_up: boolean;
+  error: string | null;
+  ssl_days_remaining: number | null;
+}
+
+/** Model database: Incident */
+export interface Incident {
+  id: string;
+  monitor_id: string;
+  title: string;
+  status: IncidentStatus;
+  started_at: string;
+  resolved_at: string | null;
+  last_error: string | null;
+}
+
+/** Model database: StatusPage */
+export interface StatusPage {
+  id: string;
+  owner_id: string;
+  slug: string;
+  title: string;
+  description: string | null;
+  is_public: boolean;
+  created_at: string;
+}
+
 /** Hasil pengecekan HTTP */
 export interface HttpCheckResult {
   statusCode: number | null;
