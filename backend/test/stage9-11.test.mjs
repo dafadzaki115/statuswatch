@@ -8,6 +8,7 @@ import {
   calculateAverageResponseTime,
   calculateDailyUptimeSegments,
   formatDurationSeconds,
+  formatSslStatus,
   AppError,
   ErrorCode,
 } from '../dist/index.js';
@@ -201,6 +202,49 @@ test('Tahap 9: Uptime & Metrik - Format durasi detik ke teks Bahasa Indonesia', 
   assert.equal(formatDurationSeconds(3660), '1 jam 1 menit');
   assert.equal(formatDurationSeconds(86400), '1 hari');
   assert.equal(formatDurationSeconds(null), '-');
+});
+
+test('Tahap 9: Uptime & Metrik - Format status sertifikat SSL (>30, 8-30, <=7, expired, null)', () => {
+  // > 30 hari -> safe (hijau)
+  const safe = formatSslStatus(85);
+  assert.equal(safe.level, 'safe');
+  assert.equal(safe.label, '85 hari');
+
+  const safe31 = formatSslStatus(31);
+  assert.equal(safe31.level, 'safe');
+  assert.equal(safe31.label, '31 hari');
+
+  // 8 s/d 30 hari -> warning (kuning)
+  const warn30 = formatSslStatus(30);
+  assert.equal(warn30.level, 'warning');
+  assert.equal(warn30.label, '30 hari');
+
+  const warn8 = formatSslStatus(8);
+  assert.equal(warn8.level, 'warning');
+  assert.equal(warn8.label, '8 hari');
+
+  // <= 7 hari -> danger (merah)
+  const danger7 = formatSslStatus(7);
+  assert.equal(danger7.level, 'danger');
+  assert.equal(danger7.label, '7 hari');
+
+  const danger1 = formatSslStatus(1);
+  assert.equal(danger1.level, 'danger');
+  assert.equal(danger1.label, '1 hari');
+
+  // <= 0 -> expired
+  const exp0 = formatSslStatus(0);
+  assert.equal(exp0.level, 'expired');
+  assert.equal(exp0.label, 'Expired');
+
+  const expNegative = formatSslStatus(-5);
+  assert.equal(expNegative.level, 'expired');
+  assert.equal(expNegative.label, 'Expired');
+
+  // null / undefined -> none ('-')
+  const noneNull = formatSslStatus(null);
+  assert.equal(noneNull.level, 'none');
+  assert.equal(noneNull.label, '-');
 });
 
 // ============================================

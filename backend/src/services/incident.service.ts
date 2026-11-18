@@ -13,6 +13,49 @@ export interface ProcessCheckResultOutput {
   incident: Incident | null;
 }
 
+export interface IncidentStateTransition {
+  nextStatus: MonitorStatus;
+  consecutiveFailures: number;
+  shouldOpenIncident: boolean;
+  shouldResolveIncident: boolean;
+}
+
+/**
+ * Fungsi murni (pure function) untuk menghitung transisi state machine insiden.
+ */
+export function computeIncidentState(
+  currentConsecutiveFailures: number,
+  currentStatus: MonitorStatus,
+  hasOpenIncident: boolean,
+  isUp: boolean
+): IncidentStateTransition {
+  if (isUp) {
+    return {
+      nextStatus: 'up',
+      consecutiveFailures: 0,
+      shouldOpenIncident: false,
+      shouldResolveIncident: hasOpenIncident,
+    };
+  }
+
+  const failures = currentConsecutiveFailures + 1;
+  if (failures >= 2) {
+    return {
+      nextStatus: 'down',
+      consecutiveFailures: failures,
+      shouldOpenIncident: !hasOpenIncident,
+      shouldResolveIncident: false,
+    };
+  }
+
+  return {
+    nextStatus: currentStatus === 'unknown' ? 'unknown' : currentStatus,
+    consecutiveFailures: failures,
+    shouldOpenIncident: false,
+    shouldResolveIncident: false,
+  };
+}
+
 /**
  * Business logic untuk deteksi dan manajemen insiden otomatis.
  *
@@ -41,57 +84,47 @@ export class IncidentService {
   ): Promise<ProcessCheckResultOutput> {
     const openIncident = await this.incidentRepo.findOpenByMonitorId(monitor.id);
 
-    if (isUp) {
-      // Pengecekan BERHASIL
-      let resolvedIncident: Incident | null = null;
-      let incidentResolved = false;
+    const transition = computeIncidentState(
+      monitor.consecutive_failures || 0,
+      monitor.current_status,
+      Boolean(openIncident),
+      isUp
+    );
 
-      if (openIncident) {
+    if (isUp) {
+      let resolvedIncident: Incident | null = null;
+      if (transition.shouldResolveIncident && openIncident) {
         resolvedIncident = await this.incidentRepo.resolve(openIncident.id);
-        incidentResolved = true;
       }
 
       return {
-        nextStatus: 'up',
-        consecutiveFailures: 0,
+        nextStatus: transition.nextStatus,
+        consecutiveFailures: transition.consecutiveFailures,
         incidentOpened: false,
-        incidentResolved,
+        incidentResolved: transition.shouldResolveIncident,
         incident: resolvedIncident,
       };
     }
 
-    // Pengecekan GAGAL
-    const newConsecutiveFailures = (monitor.consecutive_failures || 0) + 1;
+    // Gagal
+    let activeIncident = openIncident;
+    let incidentOpened = false;
 
-    if (newConsecutiveFailures >= 2) {
-      let activeIncident = openIncident;
-      let incidentOpened = false;
-
-      if (!activeIncident) {
-        activeIncident = await this.incidentRepo.create({
-          monitor_id: monitor.id,
-          title: `${monitor.name} tidak dapat diakses`,
-          last_error: lastError,
-        });
-        incidentOpened = true;
-      }
-
-      return {
-        nextStatus: 'down',
-        consecutiveFailures: newConsecutiveFailures,
-        incidentOpened,
-        incidentResolved: false,
-        incident: activeIncident,
-      };
+    if (transition.shouldOpenIncident) {
+      activeIncident = await this.incidentRepo.create({
+        monitor_id: monitor.id,
+        title: `${monitor.name} tidak dapat diakses`,
+        last_error: lastError,
+      });
+      incidentOpened = true;
     }
 
-    // Gagal pertama kali (consecutive_failures == 1): belum dianggap down secara penuh untuk mencegah flapping
     return {
-      nextStatus: monitor.current_status === 'unknown' ? 'unknown' : monitor.current_status,
-      consecutiveFailures: newConsecutiveFailures,
-      incidentOpened: false,
+      nextStatus: transition.nextStatus,
+      consecutiveFailures: transition.consecutiveFailures,
+      incidentOpened,
       incidentResolved: false,
-      incident: null,
+      incident: activeIncident,
     };
   }
 }

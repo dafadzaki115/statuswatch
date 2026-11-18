@@ -226,12 +226,16 @@ test('SSRF Guard: isPrivateIp menolak semua rentang IP terlarang', () => {
   assert.equal(isPrivateIp('127.0.0.1'), true);
   assert.equal(isPrivateIp('127.255.255.255'), true);
 
+  // 0.0.0.0 / unspecified
+  assert.equal(isPrivateIp('0.0.0.0'), true);
+
   // Private Class A, B, C
   assert.equal(isPrivateIp('10.0.0.1'), true);
   assert.equal(isPrivateIp('10.254.0.1'), true);
   assert.equal(isPrivateIp('172.16.0.1'), true);
   assert.equal(isPrivateIp('172.31.255.255'), true);
   assert.equal(isPrivateIp('192.168.0.1'), true);
+  assert.equal(isPrivateIp('192.168.1.1'), true);
   assert.equal(isPrivateIp('192.168.1.100'), true);
 
   // Link-local & Cloud Metadata (AWS, GCP, Azure, DO, etc.)
@@ -307,13 +311,43 @@ test('SSRF Guard: validateUrlNotSSRF menolak localhost dan IP privat secara sink
     (err) => err.code === 'SSRF_BLOCKED'
   );
 
+  // 0.0.0.0 ditolak
+  assert.throws(
+    () => validateUrlNotSSRF('http://0.0.0.0'),
+    (err) => err.code === 'SSRF_BLOCKED'
+  );
+
   // IPv6 loopback / local ditolak
   assert.throws(
     () => validateUrlNotSSRF('http://[::1]'),
     (err) => err.code === 'SSRF_BLOCKED'
   );
 
-  // Port non-standar ditolak
+  // IPv6 ULA fc00::/7 ditolak
+  assert.throws(
+    () => validateUrlNotSSRF('http://[fc00::1]'),
+    (err) => err.code === 'SSRF_BLOCKED'
+  );
+
+  // IPv6 Link-local fe80::/10 ditolak
+  assert.throws(
+    () => validateUrlNotSSRF('http://[fe80::1]'),
+    (err) => err.code === 'SSRF_BLOCKED'
+  );
+
+  // IPv4-mapped IPv6 ::ffff:127.0.0.1 ditolak
+  assert.throws(
+    () => validateUrlNotSSRF('http://[::ffff:127.0.0.1]'),
+    (err) => err.code === 'SSRF_BLOCKED'
+  );
+
+  // URL dengan userinfo kredensial ditolak
+  assert.throws(
+    () => validateUrlNotSSRF('http://user:pass@example.com'),
+    (err) => err.code === 'SSRF_BLOCKED'
+  );
+
+  // Port non-standar (termasuk port 22 SSH) ditolak
   assert.throws(
     () => validateUrlNotSSRF('http://example.com:22'),
     (err) => err.code === 'SSRF_BLOCKED'

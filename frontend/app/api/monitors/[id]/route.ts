@@ -9,6 +9,8 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { MonitorService, AppError, type PlanType } from '@statuswatch/backend';
 
+export const dynamic = 'force-dynamic';
+
 interface RouteContext {
   params: Promise<{ id: string }>;
 }

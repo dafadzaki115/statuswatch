@@ -9,6 +9,7 @@ import {
   CheckRepository,
   IncidentRepository,
   IncidentService,
+  computeIncidentState,
   checkSingleMonitor,
   runScheduledChecks,
   checkRateLimit,
@@ -409,7 +410,7 @@ test('Tahap 7: Cron Auth - verifyCronSecret memverifikasi token constant-time se
     }
   );
 
-  // 5. Secret salah panjang (mismatched buffer length)
+  // 5. Secret salah panjang (mismatched buffer length lebih pendek & lebih panjang tidak membuat crash)
   assert.throws(
     () => verifyCronSecret('Bearer short', secret),
     (err) => {
@@ -418,6 +419,61 @@ test('Tahap 7: Cron Auth - verifyCronSecret memverifikasi token constant-time se
       return true;
     }
   );
+
+  assert.throws(
+    () => verifyCronSecret(`Bearer ${secret}-much-longer-suffix-that-exceeds-length`, secret),
+    (err) => {
+      assert(err instanceof AppError);
+      assert.equal(err.statusCode, 401);
+      return true;
+    }
+  );
+
+  assert.throws(
+    () => verifyCronSecret('Bearer ', secret),
+    (err) => {
+      assert(err instanceof AppError);
+      assert.equal(err.statusCode, 401);
+      return true;
+    }
+  );
+});
+
+test('Tahap 7: State Machine Insiden - Fungsi murni computeIncidentState menangani semua transisi', () => {
+  // Transisi 1: Gagal pertama kali (consecutive_failures = 0 -> 1), belum buka insiden (mencegah flapping)
+  const t1 = computeIncidentState(0, 'up', false, false);
+  assert.equal(t1.nextStatus, 'up');
+  assert.equal(t1.consecutiveFailures, 1);
+  assert.equal(t1.shouldOpenIncident, false);
+  assert.equal(t1.shouldResolveIncident, false);
+
+  // Transisi 2: Gagal kedua kali (consecutive_failures = 1 -> 2), insiden HARUS dibuka dan status down
+  const t2 = computeIncidentState(1, 'up', false, false);
+  assert.equal(t2.nextStatus, 'down');
+  assert.equal(t2.consecutiveFailures, 2);
+  assert.equal(t2.shouldOpenIncident, true);
+  assert.equal(t2.shouldResolveIncident, false);
+
+  // Transisi 3: Gagal berlanjut saat sudah ada insiden open -> jangan buka ganda (idempoten)
+  const t3 = computeIncidentState(2, 'down', true, false);
+  assert.equal(t3.nextStatus, 'down');
+  assert.equal(t3.consecutiveFailures, 3);
+  assert.equal(t3.shouldOpenIncident, false);
+  assert.equal(t3.shouldResolveIncident, false);
+
+  // Transisi 4: Sukses kembali saat insiden open -> reset kegagalan ke 0, status up, dan resolve insiden
+  const t4 = computeIncidentState(3, 'down', true, true);
+  assert.equal(t4.nextStatus, 'up');
+  assert.equal(t4.consecutiveFailures, 0);
+  assert.equal(t4.shouldOpenIncident, false);
+  assert.equal(t4.shouldResolveIncident, true);
+
+  // Transisi 5: Sukses saat tidak ada insiden -> status tetap up, consecutiveFailures 0
+  const t5 = computeIncidentState(0, 'up', false, true);
+  assert.equal(t5.nextStatus, 'up');
+  assert.equal(t5.consecutiveFailures, 0);
+  assert.equal(t5.shouldOpenIncident, false);
+  assert.equal(t5.shouldResolveIncident, false);
 });
 
 test('Tahap 7: State Machine Insiden - 2x gagal beruntun membuka insiden; idempotensi & pemulihan otomatis', async () => {

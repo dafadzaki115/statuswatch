@@ -75,10 +75,25 @@ export function isPrivateIp(ip: string): boolean {
     // :: / unspecified dan ::1 / loopback
     if (clean === '::' || clean === '::1' || clean === '0:0:0:0:0:0:0:1') return true;
 
-    // IPv4-mapped IPv6 (::ffff:127.0.0.1 dll)
-    const ipv4MappedMatch = clean.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/);
-    if (ipv4MappedMatch) {
-      return isPrivateIp(ipv4MappedMatch[1]);
+    // IPv4-mapped IPv6 (::ffff:127.0.0.1 atau format hex URL standar seperti ::ffff:7f00:1)
+    if (clean.startsWith('::ffff:')) {
+      const rest = clean.slice(7);
+      if (/^\d+\.\d+\.\d+\.\d+$/.test(rest)) {
+        return isPrivateIp(rest);
+      }
+      const hexParts = rest.split(':');
+      if (hexParts.length === 2) {
+        const high = parseInt(hexParts[0], 16);
+        const low = parseInt(hexParts[1], 16);
+        if (!isNaN(high) && !isNaN(low)) {
+          const a = (high >> 8) & 0xff;
+          const b = high & 0xff;
+          const c = (low >> 8) & 0xff;
+          const d = low & 0xff;
+          return isPrivateIp(`${a}.${b}.${c}.${d}`);
+        }
+      }
+      return true; // format invalid dalam ::ffff: ditolak demi keamanan
     }
 
     // ULA fc00::/7 (fc atau fd)
@@ -120,6 +135,15 @@ export function validateUrlNotSSRF(urlString: string): URL {
       400,
       ErrorCode.SSRF_BLOCKED,
       'Hanya protokol http:// dan https:// yang diizinkan'
+    );
+  }
+
+  // Tolak userinfo (kredensial di URL)
+  if (parsed.username || parsed.password) {
+    throw new AppError(
+      400,
+      ErrorCode.SSRF_BLOCKED,
+      'URL dengan kredensial autentikasi (userinfo) tidak diizinkan'
     );
   }
 
@@ -178,11 +202,12 @@ async function defaultDnsLookup(hostname: string): Promise<string[]> {
   try {
     const results = await dns.lookup(hostname, { all: true });
     return results.map((r) => r.address);
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errObj = error as { code?: string; message?: string };
     throw new AppError(
       400,
       ErrorCode.SSRF_BLOCKED,
-      `Gagal menyelesaikan DNS untuk ${hostname}: ${error.code || error.message}`
+      `Gagal menyelesaikan DNS untuk ${hostname}: ${errObj.code || errObj.message || String(error)}`
     );
   }
 }

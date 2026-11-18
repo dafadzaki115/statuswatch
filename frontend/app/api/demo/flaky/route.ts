@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 /**
  * Endpoint simulasi untuk demonstrasi monitor status ketersediaan (PRD Bagian 16):

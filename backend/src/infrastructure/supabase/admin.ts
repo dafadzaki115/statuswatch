@@ -73,7 +73,7 @@ export const getAdminClient = getSupabaseAdmin;
 export const supabaseAdmin: SupabaseClient = new Proxy({} as SupabaseClient, {
   get(_target, prop) {
     const client = getSupabaseAdmin();
-    const value = (client as any)[prop];
+    const value = Reflect.get(client, prop);
     if (typeof value === 'function') {
       return value.bind(client);
     }

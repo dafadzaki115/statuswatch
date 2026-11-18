@@ -32,23 +32,15 @@ export async function performHttpCheck(
 
     // Loop penanganan redirect manual untuk memverifikasi keamanan SSRF tiap hop
     while (redirectsCount <= MAX_REDIRECTS) {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
-      let response: Response;
-      try {
-        response = await fetch(currentUrl, {
-          method,
-          headers: {
-            'User-Agent': USER_AGENT,
-            Accept: '*/*',
-          },
-          redirect: 'manual',
-          signal: controller.signal,
-        });
-      } finally {
-        clearTimeout(timeoutId);
-      }
+      const response = await fetch(currentUrl, {
+        method,
+        headers: {
+          'User-Agent': USER_AGENT,
+          Accept: '*/*',
+        },
+        redirect: 'manual',
+        signal: AbortSignal.timeout(timeoutMs),
+      });
 
       // Jika respons adalah redirect (301, 302, 303, 307, 308)
       if ([301, 302, 303, 307, 308].includes(response.status)) {
@@ -107,23 +99,25 @@ export async function performHttpCheck(
       isUp: false,
       error: 'TOO_MANY_REDIRECTS',
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     const responseMs = Date.now() - startTime;
     let safeError = 'CONNECTION_ERROR';
 
-    if (error.name === 'AbortError' || error.name === 'TimeoutError') {
+    const err = error as { name?: string; code?: string; message?: string };
+
+    if (err.name === 'AbortError' || err.name === 'TimeoutError') {
       safeError = 'TIMEOUT';
-    } else if (error.code === 'SSRF_BLOCKED' || (error.message && error.message.includes('SSRF'))) {
+    } else if (err.code === 'SSRF_BLOCKED' || (err.message && err.message.includes('SSRF'))) {
       safeError = 'SSRF_BLOCKED';
-    } else if (error.code === 'ENOTFOUND' || error.message?.includes('ENOTFOUND')) {
+    } else if (err.code === 'ENOTFOUND' || err.message?.includes('ENOTFOUND')) {
       safeError = 'DNS_FAILURE';
-    } else if (error.code === 'ECONNREFUSED' || error.message?.includes('ECONNREFUSED')) {
+    } else if (err.code === 'ECONNREFUSED' || err.message?.includes('ECONNREFUSED')) {
       safeError = 'CONNECTION_REFUSED';
     } else if (
-      error.code?.includes('CERT') ||
-      error.code?.includes('TLS') ||
-      error.message?.includes('certificate') ||
-      error.message?.includes('SSL')
+      err.code?.includes('CERT') ||
+      err.code?.includes('TLS') ||
+      err.message?.includes('certificate') ||
+      err.message?.includes('SSL')
     ) {
       safeError = 'TLS_ERROR';
     }

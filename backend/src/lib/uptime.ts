@@ -111,3 +111,34 @@ export function formatDurationSeconds(seconds: number | null | undefined): strin
   const remainingHours = hours % 24;
   return remainingHours > 0 ? `${days} hari ${remainingHours} jam` : `${days} hari`;
 }
+
+export type SslStatusLevel = 'safe' | 'warning' | 'danger' | 'expired' | 'none';
+
+export interface SslStatusInfo {
+  level: SslStatusLevel;
+  label: string;
+}
+
+/**
+ * Menentukan tingkat status dan label sertifikat SSL:
+ * - null: 'none' ('-')
+ * - <= 0: 'expired' ('Expired')
+ * - <= 7: 'danger' (mis. '5 hari')
+ * - 8 s/d 30: 'warning' (mis. '20 hari')
+ * - > 30: 'safe' (mis. '85 hari')
+ */
+export function formatSslStatus(daysRemaining: number | null | undefined): SslStatusInfo {
+  if (daysRemaining == null || isNaN(daysRemaining)) {
+    return { level: 'none', label: '-' };
+  }
+  if (daysRemaining <= 0) {
+    return { level: 'expired', label: 'Expired' };
+  }
+  if (daysRemaining <= 7) {
+    return { level: 'danger', label: `${daysRemaining} hari` };
+  }
+  if (daysRemaining <= 30) {
+    return { level: 'warning', label: `${daysRemaining} hari` };
+  }
+  return { level: 'safe', label: `${daysRemaining} hari` };
+}
